@@ -111,38 +111,64 @@ function fibonacci(num: number): number[] {
   }
   
   // =============Tsak 7
-  function getPerimeterRectangle(sideA: number, sideB: number): number {
-    return (sideA + sideB) * 2;
-  }
-  
-  function getSquareRectangle(sideA: number, sideB: number): number {
-    return sideA * sideB;
+  class Rectangle {
+    sideA: number;
+    sideB: number;
+
+  constructor(sideA: number, sideB: number) {
+    this.sideA = sideA;
+    this.sideB = sideB;
   }
 
-  function getPerimeterTriangle(sideA: number, sideB: number, sideC: number): number {
-    return sideA + sideB + sideC;
+  perimeter(): number {
+    return (this.sideA + this.sideB) * 2;
   }
-  
-  function getSquareTriangle(sideA: number, sideB: number, sideС: number): number {
-    const semiPerimeter: number = (sideA + sideB + sideС) / 2;
-    const n: number =
+
+  area(): number {
+    return this.sideA * this.sideB;
+  }
+}
+class Triangle {
+  sideA: number;
+  sideB: number; 
+  sideC: number;
+
+  constructor(sideA: number, sideB: number, sideC: number) {
+    this.sideA = sideA;
+    this.sideB = sideB;
+    this.sideC = sideC;
+  }
+
+  perimeter(): number {
+    return this.sideA + this.sideB + this.sideC;
+  }
+
+  area(): number {
+    const semiPerimeter: number = this.perimeter() / 2;
+
+    return Math.sqrt(
       semiPerimeter *
-      (semiPerimeter - sideA) *
-      (semiPerimeter - sideB) *
-      (semiPerimeter - sideС);
-  
-    return n ** (1 / 2);
+          ((semiPerimeter - this.sideA) *
+              (semiPerimeter - this.sideB) *
+              (semiPerimeter - this.sideC)),
+  );
   }
-  
-  function getPerimeterСircle(radius: number): number {
-    const pi: number = 3.14;
-    return 2 * radius * pi;
+}
+class Circle {
+  radius: number;
+
+  constructor(radius: number) {
+    this.radius = radius;
   }
-  
-  function getSquareСircle(radius: number): number {
-    const pi: number = 3.14;
-    return pi * radius ** 2;
+
+  perimeter(): number {
+    return 2 * this.radius * Math.PI;
   }
+
+  area(): number {
+    return Math.PI * this.radius ** 2;
+  }
+}
 
   // =============Tsak 8
   function getFactorial(num: number): number {
