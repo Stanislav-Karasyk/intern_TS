@@ -1,22 +1,11 @@
 // =============Tsak 1
-interface IValue {
-  value<T>():T;
-}
 interface INode {
-  value: IValue;
-  left: INode | null;
-  right: INode | null;
-
-  insert(value: IValue, node?: INode): void;
-  search(value: IValue, node?: INode): INode;
-  searchMinValue(node: INode): INode;
-  delete(value: IValue, node?: INode): INode;
+  valueFn: () => number ;
 }
-
-class NodeRoot implements INode {
-    value: IValue;
-    right: INode | null;
-    left: INode | null;
+class NodeRoot {
+    value: INode | null;
+    right: NodeRoot | null;
+    left: NodeRoot | null;
 
     constructor() {
       this.value = null;
@@ -24,14 +13,14 @@ class NodeRoot implements INode {
       this.right = null;
     }
   
-    insert(value: IValue, node?: INode): void {
+    insert(value: INode, node?: NodeRoot): void {
       node = node || this;
   
       if (node.value === null) {
         node.value = value;
       }
   
-      if (value > node.value) {
+      if (value.valueFn() > node.value.valueFn()) {
         if (node.right === null) {
           node.right = new NodeRoot();
         }
@@ -39,7 +28,7 @@ class NodeRoot implements INode {
         return this.insert(value, node.right);
       }
   
-      if (value < node.value) {
+      if (value.valueFn() < node.value.valueFn()) {
         if (node.left === null) {
           node.left = new NodeRoot();
         }
@@ -48,14 +37,14 @@ class NodeRoot implements INode {
       }
     }
   
-    search(value: IValue, node?: INode): INode {
+    search(value: INode, node?: NodeRoot): NodeRoot {
       node = node || this;
   
-      if (value === node.value) {
+      if (value.valueFn() === node.value.valueFn()) {
         return node;
       }
   
-      if (value > node.value) {
+      if (value.valueFn() > node.value.valueFn()) {
         if (node.right === null) {
           return null;
         }
@@ -63,7 +52,7 @@ class NodeRoot implements INode {
         this.search(value, node.right);
       }
   
-      if (value < node.value) {
+      if (value.valueFn() < node.value.valueFn()) {
         if (node.left === null) {
           return null;
         }
@@ -72,7 +61,7 @@ class NodeRoot implements INode {
       }
     }
   
-    searchMinValue(node: INode): INode {
+    searchMinValue(node: NodeRoot): NodeRoot {
       node = node || this;
   
       if (node.left === null) {
@@ -82,16 +71,16 @@ class NodeRoot implements INode {
       return this.searchMinValue(node.left);
     }
   
-    delete(value: IValue, node?: INode): INode {
+    delete(value: INode, node?: NodeRoot): NodeRoot {
       node = node || this;
   
       if (node === null) {
         return null;
-      } else if (value < node.value) {
+      } else if (value.valueFn() < node.value.valueFn()) {
         node.left = this.delete(value, node.left);
   
         return node;
-      } else if (value > node.value) {
+      } else if (value.valueFn() > node.value.valueFn()) {
         node.right = this.delete(value, node.right);
   
         return node;
@@ -112,7 +101,7 @@ class NodeRoot implements INode {
           return node;
         }
   
-        let newNode: INode = this.searchMinValue(node.right);
+        let newNode: NodeRoot = this.searchMinValue(node.right);
         node.value = newNode.value;
         node.right = this.delete(newNode.value, node.right);
   
