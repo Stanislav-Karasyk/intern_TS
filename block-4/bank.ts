@@ -19,17 +19,29 @@
     accounts: IAccount[];
   }
 
+  interface IExchangeRates {
+    ccy: string;
+    base_ccy: string; 
+    buy: string; 
+    sale: string;
+  }
+
+  interface IDebtors {
+    debtors: number,
+    sumDebt: number,
+  }
+
   interface IBank {
     clients: IClient[];
 
     addClient(name: string, surname: string): IClient;
     findClient(id: number): IClient;
     addAccount(id: number, type: 'debit' | 'credit', currency: string): IAccount;
-    convertsСurrency(rates: any[], initial: string, final: string, amount: number): number;
-    getTotalAmountFunds(finalСгrrency: string): Promise<any>;
-    getTotalAmountDebts(finalСгrrency: string): Promise<any>;
-    getDebtors(isActive: boolean, finalСгrrency: string): Promise<any>;
-    getExchangeRates(): Promise<any>;
+    convertsСurrency(rates: IExchangeRates[], initial: string, final: string, amount: number): number;
+    getTotalAmountFunds(finalСгrrency: string): Promise<number>;
+    getTotalAmountDebts(finalСгrrency: string): Promise<number>;
+    getDebtors(isActive: boolean, finalСгrrency: string): Promise<IDebtors>;
+    getExchangeRates(handleError: Function): Promise<IExchangeRates[]>;
   }
 
   class Bank implements IBank {
@@ -92,9 +104,9 @@
       return account;
     }
   
-    convertsСurrency(rates: any[], initial: string, final: string, amount: number): number {
-      let initialСгrrency: any;
-      let finalСгrrency: any;
+    convertsСurrency(rates: IExchangeRates[], initial: string, final: string, amount: number): number {
+      let initialСгrrency: IExchangeRates;
+      let finalСгrrency: IExchangeRates;
       let res: number = 0;
   
       for (let rate of rates) {
@@ -111,17 +123,17 @@
       }
   
       if (initial === "UAH") {
-        res = amount / finalСгrrency.buy;
+        res = amount / Number(finalСгrrency.buy);
       }
   
       if (final === "UAH") {
-        res = amount * initialСгrrency.buy;
+        res = amount * Number(initialСгrrency.buy);
       }
   
       rates.forEach((rate) => {
         if (finalСгrrency) {
           if (initial === rate.ccy) {
-            res = (amount * rate.buy) / finalСгrrency.buy;
+            res = (amount * Number(rate.buy)) / Number(finalСгrrency.buy);
           }
         }
       });
@@ -129,8 +141,8 @@
       return Math.round(res * 100) / 100;
     }
   
-    async getTotalAmountFunds(finalСгrrency: string): Promise<any> {
-      const currencyRates: any[] = await this.getExchangeRates();
+    async getTotalAmountFunds(finalСгrrency: string): Promise<number> {
+      const currencyRates: IExchangeRates[] = await this.getExchangeRates((error: Error) => error);
       let res: number = 0;
   
       this.clients.forEach((client) => {
@@ -151,8 +163,8 @@
       return Math.round(res * 100) / 100;
     }
   
-    async getTotalAmountDebts(finalСгrrency: string): Promise<any> {
-      const currencyRates: any[] = await this.getExchangeRates();
+    async getTotalAmountDebts(finalСгrrency: string): Promise<number> {
+      const currencyRates: IExchangeRates[] = await this.getExchangeRates((error: Error) => error);
       let res: number = 0;
   
       this.clients.forEach((client) => {
@@ -175,9 +187,9 @@
       return Math.round(res * 100) / 100;
     }
   
-    async getDebtors(isActive: boolean, finalСгrrency: string): Promise<any> {
-      const currencyRates: any[] = await this.getExchangeRates();
-      let res: any = {
+    async getDebtors(isActive: boolean, finalСгrrency: string): Promise<IDebtors> {
+      const currencyRates: IExchangeRates[] = await this.getExchangeRates((error: Error) => error);
+      let res: IDebtors = {
         debtors: 0,
         sumDebt: 0, 
       };
@@ -202,14 +214,19 @@
       return res;
     }
   
-    async getExchangeRates(): Promise<any> {
+    async getExchangeRates(handleError: Function): Promise<IExchangeRates[]> {
       const privatbankApiUrl: string =
         "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11";
-  
-      const data: any = await fetch(privatbankApiUrl).then((response) =>
-        response.json()
-      );
-  
-      return data;
+
+        try {
+          const data: IExchangeRates[] = await fetch(privatbankApiUrl).then((response) =>
+            response.json()
+          );
+
+          return data;
+
+        } catch (error) {   
+            handleError(error)
+        }
     }
   }

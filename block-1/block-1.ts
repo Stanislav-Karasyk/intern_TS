@@ -111,29 +111,37 @@ function fibonacci(num: number): number[] {
   }
   
   // =============Tsak 7
-  class Rectangle {
-    sideA: number;
-    sideB: number;
+  abstract class Figure {
+    abstract perimeter(): number; 
+    abstract area(): number;
+}
+  class Rectangle extends Figure {
+    width: number;
+    height: number;
 
-  constructor(sideA: number, sideB: number) {
-    this.sideA = sideA;
-    this.sideB = sideB;
+  constructor(width: number, height: number) {
+    super();
+
+    this.width = width;
+    this.height = height;
   }
 
   perimeter(): number {
-    return (this.sideA + this.sideB) * 2;
+    return (this.width + this.height) * 2;
   }
 
   area(): number {
-    return this.sideA * this.sideB;
+    return this.width * this.height;
   }
 }
-class Triangle {
+class Triangle extends Figure {
   sideA: number;
   sideB: number; 
   sideC: number;
 
   constructor(sideA: number, sideB: number, sideC: number) {
+    super();
+
     this.sideA = sideA;
     this.sideB = sideB;
     this.sideC = sideC;
@@ -154,10 +162,12 @@ class Triangle {
   );
   }
 }
-class Circle {
+class Circle extends Figure {
   radius: number;
 
   constructor(radius: number) {
+    super();
+
     this.radius = radius;
   }
 
