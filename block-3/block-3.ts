@@ -1,17 +1,17 @@
 // =============Tsak 1
 interface INode {
-  value: number | null;
+  value: any;
   left: INode | null;
   right: INode | null;
 
-  insert(value: number, node?: INode): void;
-  search(value: number, node?: INode): INode;
+  insert<T>(value: T, node?: INode): void;
+  search<T>(value: T, node?: INode): INode;
   searchMinValue(node: INode): INode;
-  delete(value: number, node?: INode): INode;
+  delete<T>(value: T, node?: INode): INode;
 }
 
 class NodeRoot implements INode {
-    value: number | null;
+    value: any;
     right: INode | null;
     left: INode | null;
 
@@ -21,7 +21,7 @@ class NodeRoot implements INode {
       this.right = null;
     }
   
-    insert(value: number, node?: INode) {
+    insert<T>(value: T, node?: INode): void {
       node = node || this;
   
       if (node.value === null) {
@@ -45,7 +45,7 @@ class NodeRoot implements INode {
       }
     }
   
-    search(value: number, node?: INode) {
+    search<T>(value: T, node?: INode): INode {
       node = node || this;
   
       if (value === node.value) {
@@ -69,7 +69,7 @@ class NodeRoot implements INode {
       }
     }
   
-    searchMinValue(node: INode) {
+    searchMinValue(node: INode): INode {
       node = node || this;
   
       if (node.left === null) {
@@ -79,7 +79,7 @@ class NodeRoot implements INode {
       return this.searchMinValue(node.left);
     }
   
-    delete(value: number, node?: INode) {
+    delete<T>(value: T, node?: INode): INode {
       node = node || this;
   
       if (node === null) {
